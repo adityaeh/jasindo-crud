@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -42,4 +43,29 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function scopeFilter($query, $request)
+    {
+        foreach ($request->all() as $key => $val) {
+            if ($key === 'perPage' || $key === 'page') {
+            } else {
+                if ($request->has($key)) {
+                    if ($val !== null) {
+                        switch ($key) {
+                                // case 'country':
+                                // $query->whereHas('country', function ($query) use ($val) {
+                                //     $query->where('name', 'like', '%' . $val . '%');
+                                // });
+                                // break;
+                            default:
+                                $query->where($key, 'like', '%' . $val . '%');
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $query;
+    }
 }
